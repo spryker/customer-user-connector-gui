@@ -18,8 +18,5 @@ interface CustomerUserConnectorGuiToCustomerQueryContainerInterface
      */
     public function queryCustomerById($id): SpyCustomerQuery;
 
-    /**
-     * @return \Orm\Zed\Customer\Persistence\SpyCustomerQuery
-     */
     public function queryCustomers(): SpyCustomerQuery;
 }

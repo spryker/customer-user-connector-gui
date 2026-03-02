@@ -34,9 +34,6 @@ class CustomerUserConnectorGuiToCustomerQueryContainerBridge implements Customer
         return $this->customerQueryContainer->queryCustomerById($id);
     }
 
-    /**
-     * @return \Orm\Zed\Customer\Persistence\SpyCustomerQuery
-     */
     public function queryCustomers(): SpyCustomerQuery
     {
         return $this->customerQueryContainer->queryCustomers();

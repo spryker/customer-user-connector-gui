@@ -101,17 +101,11 @@ class CustomerUserConnectorGuiCommunicationFactory extends AbstractCommunication
         return $this->getProvidedDependency(CustomerUserConnectorGuiDependencyProvider::QUERY_CONTAINER_USER);
     }
 
-    /**
-     * @return \Spryker\Zed\CustomerUserConnectorGui\Dependency\Service\CustomerUserConnectorGuiToUtilSanitizeServiceInterface
-     */
     public function getUtilSanitizeService(): CustomerUserConnectorGuiToUtilSanitizeServiceInterface
     {
         return $this->getProvidedDependency(CustomerUserConnectorGuiDependencyProvider::SERVICE_UTIL_SANITIZE);
     }
 
-    /**
-     * @return \Spryker\Zed\CustomerUserConnectorGui\Dependency\Service\CustomerUserConnectorGuiToUtilEncodingServiceInterface
-     */
     public function getUtilEncodingService(): CustomerUserConnectorGuiToUtilEncodingServiceInterface
     {
         return $this->getProvidedDependency(CustomerUserConnectorGuiDependencyProvider::SERVICE_UTIL_ENCODING);

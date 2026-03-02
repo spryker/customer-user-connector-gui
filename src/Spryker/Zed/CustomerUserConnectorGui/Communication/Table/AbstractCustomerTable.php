@@ -87,12 +87,6 @@ abstract class AbstractCustomerTable extends AbstractTable
      */
     protected $utilEncoding;
 
-    /**
-     * @param \Spryker\Zed\CustomerUserConnectorGui\Dependency\QueryContainer\CustomerUserConnectorGuiToCustomerQueryContainerInterface $customerQueryContainer
-     * @param \Generated\Shared\Transfer\UserTransfer $userTransfer
-     * @param \Spryker\Zed\CustomerUserConnectorGui\Dependency\Service\CustomerUserConnectorGuiToUtilSanitizeServiceInterface $utilSanitizeService
-     * @param \Spryker\Zed\CustomerUserConnectorGui\Dependency\Service\CustomerUserConnectorGuiToUtilEncodingServiceInterface $utilEncoding
-     */
     public function __construct(
         CustomerUserConnectorGuiToCustomerQueryContainerInterface $customerQueryContainer,
         UserTransfer $userTransfer,

@@ -24,11 +24,6 @@ class CustomerUserConnectorGuiToCustomerUserConnectorBridge implements CustomerU
         $this->customerUserConnectorFacade = $customerUserConnectorFacade;
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\CustomerUserConnectionUpdateTransfer $customerUserConnectionUpdateTransfer
-     *
-     * @return bool
-     */
     public function updateCustomerUserConnection(CustomerUserConnectionUpdateTransfer $customerUserConnectionUpdateTransfer): bool
     {
         return $this->customerUserConnectorFacade->updateCustomerUserConnection($customerUserConnectionUpdateTransfer);
