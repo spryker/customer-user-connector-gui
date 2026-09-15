@@ -6,6 +6,7 @@
 'use strict';
 
 var TableHandler = require('./table-handler');
+var tableAccess = require('ZedGuiModules/libs/table/table-access');
 
 /**
  * @param {string} sourceTableSelector
@@ -27,10 +28,10 @@ function create(
     formFieldId,
     onRemoveCallback,
 ) {
-    $(destinationTableSelector).DataTable({ destroy: true });
+    var $sourceTable = $(sourceTableSelector);
 
     var tableHandler = TableHandler.create(
-        $(sourceTableSelector),
+        $sourceTable,
         $(destinationTableSelector),
         labelCaption,
         labelId,
@@ -38,31 +39,40 @@ function create(
         onRemoveCallback,
     );
 
-    $(sourceTableSelector)
-        .DataTable()
-        .on('draw', function (event, settings) {
-            $(checkboxSelector, $(sourceTableSelector)).off('change');
-            $(checkboxSelector, $(sourceTableSelector)).on('change', function () {
-                var $checkbox = $(this);
-                var info = $.parseJSON($checkbox.attr('data-info'));
+    if (!$sourceTable.length) {
+        return tableHandler;
+    }
 
-                if (tableHandler.isCheckboxActive($checkbox)) {
-                    tableHandler.addSelectedCustomer(info.idCustomer, info.firstname, info.lastname, info.gender);
-                } else {
-                    tableHandler.removeSelectedCustomer(info.idCustomer);
-                }
-            });
+    $sourceTable.on('change', checkboxSelector, function () {
+        var $checkbox = $(this);
+        var info = $.parseJSON($checkbox.attr('data-info'));
 
-            for (var i = 0; i < settings.json.data.length; i++) {
-                var customer = settings.json.data[i];
-                var idCustomer = parseInt(customer[1], 10);
+        if (tableHandler.isCheckboxActive($checkbox)) {
+            tableHandler.addSelectedCustomer(info.idCustomer, info.firstname, info.lastname, info.gender);
 
-                var selector = tableHandler.getSelector();
-                if (selector.isIdSelected(idCustomer)) {
-                    tableHandler.checkCheckbox($('input[value="' + idCustomer + '"]', $(sourceTableSelector)));
-                }
-            }
+            return;
+        }
+
+        tableHandler.removeSelectedCustomer(info.id);
+    });
+
+    tableAccess.requestTable($sourceTable[0], function (handle) {
+        handle.on('draw', function () {
+            var selector = tableHandler.getSelector();
+
+            handle
+                .raw()
+                .rows()
+                .data()
+                .each(function (item) {
+                    var id = parseInt(item[1], 10);
+
+                    if (selector.isIdSelected(id)) {
+                        tableHandler.checkCheckbox($('input[value="' + id + '"]', $sourceTable));
+                    }
+                });
         });
+    });
 
     return tableHandler;
 }

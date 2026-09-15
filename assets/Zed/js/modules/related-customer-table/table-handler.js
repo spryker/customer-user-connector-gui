@@ -6,6 +6,7 @@
 'use strict';
 
 var CustomerIdSelector = require('./customer-id-selector');
+var tableAccess = require('ZedGuiModules/libs/table/table-access');
 
 var CHECKBOX_CHECKED_STATE_CHECKED = 'checked';
 var CHECKBOX_CHECKED_STATE_UN_CHECKED = 'un_checked';
@@ -30,6 +31,7 @@ function TableHandler(sourceTable, destinationTable, labelCaption, labelId, form
     };
 
     var destinationTableIdSelector = CustomerIdSelector.create();
+    var destinationHandle = null;
 
     tableHandler.toggleSelection = function () {
         $('input[type="checkbox"]', sourceTable).each(function (index, checkboxNode) {
@@ -66,56 +68,43 @@ function TableHandler(sourceTable, destinationTable, labelCaption, labelId, form
         if (destinationTableIdSelector.isIdSelected(idCustomer)) {
             return;
         }
-        destinationTableIdSelector.addIdToSelection(idCustomer);
 
         var $removeLinkTextInput = $('#remove-link-text');
 
-        destinationTable
-            .DataTable()
-            .row.add([
-                idCustomer,
-                decodeURIComponent((firstname + '').replace(/\+/g, '%20')),
-                decodeURIComponent((lastname + '').replace(/\+/g, '%20')),
-                decodeURIComponent((gender + '').replace(/\+/g, '%20')),
-                '<div><a data-id="' +
-                    idCustomer +
-                    '" href="#" class="btn btn-xs remove-item">' +
-                    ($removeLinkTextInput ? $removeLinkTextInput.val() : 'Remove') +
-                    '</a></div>',
-            ])
-            .draw();
+        destinationTableIdSelector.addIdToSelection(idCustomer, [
+            idCustomer,
+            decodeURIComponent((firstname + '').replace(/\+/g, '%20')),
+            decodeURIComponent((lastname + '').replace(/\+/g, '%20')),
+            decodeURIComponent((gender + '').replace(/\+/g, '%20')),
+            '<div><a data-id="' +
+                idCustomer +
+                '" href="#" class="btn btn-xs remove-item">' +
+                ($removeLinkTextInput ? $removeLinkTextInput.val() : 'Remove') +
+                '</a></div>',
+        ]);
 
-        $('.remove-item').off('click');
-        $('.remove-item').on('click', onRemoveCallback);
+        tableHandler.renderSelection();
 
         tableHandler.updateSelectedCustomersLabelCount();
+    };
+
+    tableHandler.renderSelection = function () {
+        if (!destinationHandle) {
+            return;
+        }
+
+        destinationHandle.raw().clear().rows.add(destinationTableIdSelector.getRows()).draw();
     };
 
     tableHandler.removeSelectedCustomer = function (idCustomer) {
         idCustomer = parseInt(idCustomer, 10);
 
-        destinationTable
-            .DataTable()
-            .rows()
-            .every(function (rowIndex, tableLoop, rowLoop) {
-                if (!this.data()) {
-                    return;
-                }
+        if (destinationTableIdSelector.isIdSelected(idCustomer)) {
+            destinationTableIdSelector.removeIdFromSelection(idCustomer);
+            tableHandler.renderSelection();
+            tableHandler.unCheckCheckbox($('input[value="' + idCustomer + '"]', sourceTable));
+        }
 
-                var rowCustomerId = parseInt(this.data()[0], 10);
-                if (idCustomer !== rowCustomerId) {
-                    return;
-                }
-
-                destinationTableIdSelector.removeIdFromSelection(idCustomer);
-
-                this.remove();
-
-                var $checkbox = $('input[value="' + idCustomer + '"]', sourceTable);
-                tableHandler.unCheckCheckbox($checkbox);
-            });
-
-        destinationTable.DataTable().draw();
         tableHandler.updateSelectedCustomersLabelCount();
     };
 
@@ -187,6 +176,18 @@ function TableHandler(sourceTable, destinationTable, labelCaption, labelId, form
         var checkedState = tableHandler.getInitialCheckboxCheckedState() !== CHECKBOX_CHECKED_STATE_UN_CHECKED;
         $checkbox.prop('checked', checkedState);
     };
+
+    if (destinationTable.length) {
+        destinationTable.on('click', '.remove-item', onRemoveCallback);
+
+        tableAccess.requestTable(destinationTable[0], function (handle) {
+            destinationHandle = handle;
+
+            handle.created().then(function () {
+                tableHandler.renderSelection();
+            });
+        });
+    }
 
     return tableHandler;
 }

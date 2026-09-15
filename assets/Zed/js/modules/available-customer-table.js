@@ -38,16 +38,7 @@ function initialize() {
  * @return {boolean}
  */
 function onRemove() {
-    var $link = $(this);
-    var id = $link.data('id');
-    var action = $link.data('action');
-
-    var dataTable = $(destinationTableSelector).DataTable();
-    dataTable.row($link.parents('tr')).remove().draw();
-
-    tableHandler.getSelector().removeIdFromSelection(id);
-    tableHandler.updateSelectedCustomersLabelCount();
-    $('input[value="' + id + '"]', $(sourceTableSelector)).prop('checked', false);
+    tableHandler.removeSelectedCustomer($(this).data('id'));
 
     return false;
 }

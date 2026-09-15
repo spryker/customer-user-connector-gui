@@ -8,10 +8,9 @@
 function CustomerIdSelector() {
     var selector = {};
     var selectedIds = {};
-    var idKey = 'id';
 
-    selector.addIdToSelection = function (id) {
-        selectedIds[id] = id;
+    selector.addIdToSelection = function (id, row) {
+        selectedIds[id] = row;
     };
 
     selector.removeIdFromSelection = function (id) {
@@ -26,15 +25,17 @@ function CustomerIdSelector() {
         selectedIds = {};
     };
 
-    selector.addAllToSelection = function (data) {
-        for (var i = 0; i < data.length; i++) {
-            var id = data[i][idKey];
-            selectedIds[id] = id;
-        }
-    };
-
     selector.getSelected = function () {
         return selectedIds;
+    };
+
+    /**
+     * @return {Array} Rows of everything selected, the table of the selection is built from them.
+     */
+    selector.getRows = function () {
+        return Object.keys(selectedIds).map(function (id) {
+            return selectedIds[id];
+        });
     };
 
     return selector;
