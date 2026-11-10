@@ -100,7 +100,7 @@ class AvailableCustomerTable extends AbstractCustomerTable
             '<a href="%s" onclick="return confirm(\'%s\')">%s</a>',
             $this->getEditCustomerUserConnectionsUrl($customerEntity->getSpyUser()->getIdUser()),
             static::REDIRECT_WARNING,
-            $customerEntity->getSpyUser()->getUsername(),
+            htmlspecialchars((string)$customerEntity->getSpyUser()->getUsername(), ENT_QUOTES, 'UTF-8'),
         );
     }
 

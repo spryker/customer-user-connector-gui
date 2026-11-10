@@ -63,7 +63,7 @@ class AssignedCustomerTable extends AbstractCustomerTable
      */
     protected function getAssignedUserColumn(SpyCustomer $customerEntity)
     {
-        return $customerEntity->getSpyUser()->getUsername();
+        return htmlspecialchars((string)$customerEntity->getSpyUser()->getUsername(), ENT_QUOTES, 'UTF-8');
     }
 
     /**
